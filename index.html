@@ -55,22 +55,22 @@
             <div class="row h-100">
                 <div id="left-half" class="col-9">
                     <div id="upper-info" class="row vh6">
-                        <div class="col bg-danger text-center">CONNECTION</div>
-                        <div class="col navy text-light">packets:</div>
-                        <div class="col navy text-light">last:</div>
-                        <div class="col navy text-light">lost:</div>
-                        <div class="col navy text-light">max alt:</div>
+                        <div id="connection" class="col text-center">CONNECTION</div>
+                        <div id="packets" class="col navy text-light">packets:</div>
+                        <div id="last" class="col navy text-light">last:</div>
+                        <div id="lost" class="col navy text-light">lost:</div>
+                        <div id="maxAlt" class="col navy text-light">max alt:</div>
                     </div>
                     <div id="lower-info" class="row vh6">
-                        <button class="col nav-link" type="button" data-toggle="collapse" data-target="#WSCollapse" aria-expanded="false" aria-controls="collapseExample">
+                        <button id="settingsButton" class="col nav-link" type="button" data-toggle="collapse" data-target="#WSCollapse" aria-expanded="false" aria-controls="collapseExample">
                             SETTINGS
                         </button>
-                        <div class="col green">lat:</div>
-                        <div class="col green">long:</div>
-                        <div class="col green">alt:</div>
-                        <div class="col green">desc:</div>
+                        <div id="lat" class="col green">lat:</div>
+                        <div id="long" class="col green">long:</div>
+                        <div id="alt" class="col green">alt:</div>
+                        <div id="desc" class="col green">desc:</div>
                     </div>
-                    <div class="collapse dropdown row" id="WSCollapse"> <!-- SETTINGS -->
+                    <div id="settingsContainer" class="collapse show dropdown row" id="WSCollapse"> <!-- SETTINGS -->
                         <select class="custom-select" style="margin-bottom:1vh;">
                             <option selected value="1">Mapa: Leszno</option>
                             <option value="2">Mapa: Carbon</option>
@@ -79,22 +79,27 @@
                             <option value="5">Mapa: Rząska</option>
                             <option value="6">Mapa: Balice daleko</option>
                         </select>
-                        <div class="row form-inline">
+                        <div class="row form-inline" style="margin-bottom: 10px;">
                             <label class="col col-form-label">WebSockets:</label>
                             <div class="form-inline" style="margin:1vh;">
-                                <input class="form-control mr-sm-2" type="text" placeholder="port" aria-label="port">
-                                <button class="btn btn-outline-primary" type="submit" style="margin-right:4vh;">Connect</button>
-                                <button class="btn btn-outline-info" type="submit" style="margin-right:1vh;">Ping</button>
-                                <div>PONGS: 0</div>
+                                <input id="wsPort" class="form-control mr-sm-2" type="text" placeholder="localhost:80" aria-label="port">
+                                <button id="wsConnect" class="btn btn-outline-primary" type="submit" style="margin-right:4vh;">Connect</button>
+                                <button id="ping" class="btn btn-outline-info" type="submit" style="margin-right:1vh;">Ping</button>
+                                <div id="pong">PONGS: 0</div>
                             </div>
                         </div>
                         <div class="row">
-                            <label>min time</label>
-                            <input id="exampleDate" class="datepickermin" name="date" type="text"/>
-                            <input id="exampleTime" class="timepickermin" type="time" name="time"/>
-                            <label>max time</label>
-                            <input id="exampleDate2" class="datepickermax" name="date" type="text"/>
-                            <input id="exampleTime2" class="timepickermax" type="time" name="time"/>
+                            <div class="col-5">
+                                <label>min time</label>
+                                <input id="exampleDate" class="datepickermin" name="date" type="text"/>
+                                <input id="exampleTime" class="timepickermin" type="time" name="time"/>
+                            </div>
+                            <div class="col-5">
+                                <label>max time</label>
+                                <input id="exampleDate2" class="datepickermax" name="date" type="text"/>
+                                <input id="exampleTime2" class="timepickermax" type="time" name="time"/>
+                            </div>
+                            <button id="clearStorage" class="btn btn-outline-info">Clear localStorage</button>
                         </div>
                     </div>
                     <div class="row vh88 row navy"> <!-- BIGG -->
@@ -133,7 +138,7 @@
                     <div id="chart1" class="row h-25">
                         <div class="col h-100">
                             <div class="row h-25 green">
-                                <div class="col h-100">temperature</div>
+                                <div id="temperature" class="col h-100">temperature:</div>
                             </div>
                             <div class="row h-75 navy">
                                 <div class="col h-100">
@@ -145,7 +150,7 @@
                     <div id="chart2" class="row h-25">
                         <div class="col h-100">
                             <div class="row h-25 green">
-                                <div class="col h-100">pressure</div>
+                                <div id="pressure" class="col h-100">pressure:</div>
                             </div>
                             <div class="row h-75 navy">
                                 <div class="col h-100">
@@ -157,7 +162,7 @@
                     <div id="chart3" class="row h-25">
                         <div class="col h-100">
                             <div class="row h-25 green">
-                                <div class="col h-100">humidity</div>
+                                <div id="humidity" class="col h-100">humidity:</div>
                             </div>
                             <div class="row h-75 navy">
                                 <div class="col h-100">
@@ -191,562 +196,9 @@
     <script src="materials/p5.min.js"></script>
     
     <script src="falsedatagenerator.js"></script>
+    <script src="model.js"></script>
     <script src="controller.js"></script>
-    <script src="bigmap.js"></script>
-    <script>
-        $(document).ready(function(){
-            let dayMin = moment().startOf('day').valueOf()
-            let hourMin
-            let timeMin
-            let dayMax = moment().startOf('day').valueOf()
-            let hourMax
-            let timeMax
-            let smallTempDataShow = []
-            let smallPresDataShow = []
-            let smallHumDataShowMin = []
-            let bigTempData = []// DO MODELU Z TYM
-            let bigPresData = []// DO MODELU Z TYM
-            let bigHumData = []// DO MODELU Z TYM
-            let bigTempDataShow
-            let bigPresDataShow
-            let bigHumDataShow
-
-            let ctx2 = document.getElementById('sTemp').getContext('2d');
-            let ctx3 = document.getElementById('sPres').getContext('2d');
-            let ctx4 = document.getElementById('sHum').getContext('2d');
-            let ctx5 = document.getElementById('bTemp').getContext('2d');
-            let ctx6 = document.getElementById('bPres').getContext('2d');
-            let ctx7 = document.getElementById('bHum').getContext('2d');
-            let sTemp
-            let sPres
-            let sHum
-            let bTemp
-            let bPres
-            let bHum
-
-            $('#bigMap').hide()
-            $('.switch').on('change.bootstrapSwitch', function () {
-                $('#map2d').toggle()
-                $('#bigMap').toggle()
-                console.log("switched")
-            });
-
-            let meter = new Divmeter({
-                height: '100px',
-                element: document.getElementById('divergence')
-            });
-            meter.time('2014-01-11T01:12:59.371Z');
-
-            // date picker
-            $('.datepickermin').pickadate({
-                onSet:function(context) {
-                    console.log('Just set stuff:', context)
-                    day = context.select
-                    if(hour) {
-                    start = day + hour
-                    actData()
-                    }
-                }
-            });
-
-            // time picker
-            $('.timepickermin').pickatime({
-                interval: 1,
-                onSet:function(context) {
-                    console.log('Just set stuff:', context.select * 60000)
-                    hour = context.select * 60000
-                    if(day) {
-                    start = day + hour
-                    actData()
-                    }
-                }
-            });
-            
-            // date picker
-            $('.datepickermax').pickadate({
-                onSet:function(context) {
-                    console.log('Just set stuff:', context)
-                    day = context.select
-                    if(hour) {
-                    start = day + hour
-                    actData()
-                    }
-                }
-            });
-
-            // time picker
-            $('.timepickermax').pickatime({
-                interval: 1,
-                onSet:function(context) {
-                    console.log('Just set stuff:', context.select * 60000)
-                    hour = context.select * 60000
-                    if(day) {
-                    start = day + hour
-                    actData()
-                    }
-                }
-            });
-
-            /* $("body").click(function(){
-                sTemp.update();
-                sPres.update();
-                sHum.update();
-                bTemp.update();
-                bPres.update();
-                bHum.update();
-            }) */
-
-            $("#chart0").click(function(){bigPlot(1)})
-            $("#chart1").click(function(){bigPlot(5)})
-            $("#chart2").click(function(){bigPlot(6)})
-            $("#chart3").click(function(){bigPlot(7)})
-
-            function bigPlot(number) {
-                switch(number) {
-                    case 1:
-                        $("#bigMapp").show();
-                        $("#bTemp").hide();
-                        $("#bPres").hide();
-                        $("#bHum").hide();
-                    break;
-                    case 5:
-                        $("#bigMapp").hide();
-                        $("#bTemp").show();
-                        $("#bPres").hide();
-                        $("#bHum").hide();
-                    break;
-                    case 6:
-                        $("#bigMapp").hide();
-                        $("#bTemp").hide();
-                        $("#bPres").show();
-                        $("#bHum").hide();
-                    break;
-                    case 7:
-                        $("#bigMapp").hide();
-                        $("#bTemp").hide();
-                        $("#bPres").hide();
-                        $("#bHum").show();
-                    break;
-                }
-            }
-            bigPlot(1)
-
-            Chart.defaults.global.defaultFontColor = '#f8f9fa';
-
-            
-            /*
-            let data = [{"t":1594752544646,"y":"51.008"},{"t":1594752544801,"y":"94.067"}]
-            */
-
-            resetCharts()
-
-            function resetCharts() {
-                bigTempDataShow = []
-                bigPresDataShow = []
-                bigHumDataShow = []
-
-                if(timeMin) {
-                    if(timeMax) { // bez nawiasow
-                        bigTempDataShow = bigTempData.filter(data => data.t > timeMin && data.t < timeMax)
-                        bigPresDataShow = bigPresData.filter(data => data.t > timeMin && data.t < timeMax)
-                        bigHumDataShow = bigHumData.filter(data => data.t > timeMin && data.t < timeMax)
-                    } else {
-                        bigTempDataShow = bigTempData.filter(data => data.t > timeMin)
-                        bigPresDataShow = bigPresData.filter(data => data.t > timeMin)
-                        bigHumDataShow = bigHumData.filter(data => data.t > timeMin)
-                    }
-                } else if(timeMax) {
-                    bigTempDataShow = bigTempData.filter(data => data.t < timeMax)
-                    bigPresDataShow = bigPresData.filter(data => data.t < timeMax)
-                    bigHumDataShow = bigHumData.filter(data => data.t < timeMax)
-                }
-
-                sTemp = new Chart(ctx2, {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'Temperature',
-                            data: smallTempDataShow,
-                            backgroundColor: '#ff4136',
-                            borderColor: '#ff4136',
-                            borderWidth: 2,
-                            fill: false,
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time',
-                                ticks: {
-                                    maxRotation: 0,
-                                    minRotation: 0
-                                },
-                                time: {
-                                    parser: 'x'
-                                },
-                                labelString: 'Time'
-                            }]
-                        },
-                        tooltips: {
-                            intersect: false,
-                            mode: 'index',
-                            callbacks: {
-                                title: function(tooltipItem, data) {
-                                    return "Temperature"
-                                },
-                                label: function(tooltipItem, data) {
-                                    return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                                },
-                                afterLabel: function(tooltipItem, data) {
-                                    return tooltipItem.yLabel + " <-- value"
-                                }
-                            },
-                            backgroundColor: '#ffffffaa',
-                            titleFontSize: 16,
-                            titleFontColor: '#000',
-                            bodyFontColor: '#000',
-                            bodyFontSize: 14,
-                            displayColors: false
-                        },
-                        animation: {
-                            duration: 0 // general animation time
-                        },
-                        hover: {
-                            animationDuration: 0 // duration of animations when hovering an item
-                        },
-                        responsiveAnimationDuration: 0, // animation duration after a resize
-                        elements: {
-                            point: {
-                                radius: 2
-                            },
-                            line: {
-                                tension: 0.1 // disables bezier curves
-                            }
-                        }
-                    }
-                });
-                sPres = new Chart(ctx3, {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'Pressure',
-                            data: smallPresDataShow,
-                            backgroundColor: '#ff4136',
-                            borderColor: '#ff4136',
-                            borderWidth: 2,
-                            fill: false,
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time',
-                                ticks: {
-                                    maxRotation: 0,
-                                    minRotation: 0
-                                },
-                                time: {
-                                    parser: 'x'
-                                },
-                                labelString: 'Time'
-                            }]
-                        },
-                        tooltips: {
-                            intersect: false,
-                            mode: 'index',
-                            callbacks: {
-                                title: function(tooltipItem, data) {
-                                    return "Pressure"
-                                },
-                                label: function(tooltipItem, data) {
-                                    return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                                },
-                                afterLabel: function(tooltipItem, data) {
-                                    return tooltipItem.yLabel + " <-- value"
-                                }
-                            },
-                            backgroundColor: '#ffffffaa',
-                            titleFontSize: 16,
-                            titleFontColor: '#000',
-                            bodyFontColor: '#000',
-                            bodyFontSize: 14,
-                            displayColors: false
-                        },
-                        animation: {
-                            duration: 0 // general animation time
-                        },
-                        hover: {
-                            animationDuration: 0 // duration of animations when hovering an item
-                        },
-                        responsiveAnimationDuration: 0, // animation duration after a resize
-                        elements: {
-                            point: {
-                                radius: 2
-                            },
-                            line: {
-                                tension: 0.1 // disables bezier curves
-                            }
-                        }
-                    }
-                });
-                sHum= new Chart(ctx4, {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'Humidity',
-                            data: smallHumDataShowMin,
-                            backgroundColor: '#ff4136',
-                            borderColor: '#ff4136',
-                            borderWidth: 2,
-                            fill: false,
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time',
-                                ticks: {
-                                    maxRotation: 0,
-                                    minRotation: 0
-                                },
-                                time: {
-                                    parser: 'x'
-                                },
-                                labelString: 'Time'
-                            }]
-                        },
-                        tooltips: {
-                            intersect: false,
-                            mode: 'index',
-                            callbacks: {
-                                title: function(tooltipItem, data) {
-                                    return "Humidity"
-                                },
-                                label: function(tooltipItem, data) {
-                                    return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                                },
-                                afterLabel: function(tooltipItem, data) {
-                                    return tooltipItem.yLabel + " <-- value"
-                                }
-                            },
-                            backgroundColor: '#ffffffaa',
-                            titleFontSize: 16,
-                            titleFontColor: '#000',
-                            bodyFontColor: '#000',
-                            bodyFontSize: 14,
-                            displayColors: false
-                        },
-                        animation: {
-                            duration: 0 // general animation time
-                        },
-                        hover: {
-                            animationDuration: 0 // duration of animations when hovering an item
-                        },
-                        responsiveAnimationDuration: 0, // animation duration after a resize
-                        elements: {
-                            point: {
-                                radius: 2
-                            },
-                            line: {
-                                tension: 0.1 // disables bezier curves
-                            }
-                        }
-                    }
-                });
-                bTemp = new Chart(ctx5, {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'Temperature',
-                            data: bigTempDataShow,
-                            backgroundColor: '#ff4136',
-                            borderColor: '#ff4136',
-                            borderWidth: 2,
-                            fill: false,
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time',
-                                ticks: {
-                                    maxRotation: 0,
-                                    minRotation: 0
-                                },
-                                time: {
-                                    parser: 'x'
-                                },
-                                labelString: 'Time'
-                            }]
-                        },
-                        tooltips: {
-                            intersect: false,
-                            mode: 'index',
-                            callbacks: {
-                                title: function(tooltipItem, data) {
-                                    return "Temperature"
-                                },
-                                label: function(tooltipItem, data) {
-                                    return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                                },
-                                afterLabel: function(tooltipItem, data) {
-                                    return tooltipItem.yLabel + " <-- value"
-                                }
-                            },
-                            backgroundColor: '#ffffffaa',
-                            titleFontSize: 16,
-                            titleFontColor: '#000',
-                            bodyFontColor: '#000',
-                            bodyFontSize: 14,
-                            displayColors: false
-                        },
-                        animation: {
-                            duration: 0 // general animation time
-                        },
-                        hover: {
-                            animationDuration: 0 // duration of animations when hovering an item
-                        },
-                        responsiveAnimationDuration: 0, // animation duration after a resize
-                        elements: {
-                            point: {
-                                radius: 2
-                            },
-                            line: {
-                                tension: 0.1 // disables bezier curves
-                            }
-                        }
-                    }
-                });
-                bPres = new Chart(ctx6, {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'Pressure',
-                            data: bigPresDataShow,
-                            backgroundColor: '#ff4136',
-                            borderColor: '#ff4136',
-                            borderWidth: 2,
-                            fill: false,
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time',
-                                ticks: {
-                                    maxRotation: 0,
-                                    minRotation: 0
-                                },
-                                time: {
-                                    parser: 'x'
-                                },
-                                labelString: 'Time'
-                            }]
-                        },
-                        tooltips: {
-                            intersect: false,
-                            mode: 'index',
-                            callbacks: {
-                                title: function(tooltipItem, data) {
-                                    return "Pressure"
-                                },
-                                label: function(tooltipItem, data) {
-                                    return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                                },
-                                afterLabel: function(tooltipItem, data) {
-                                    return tooltipItem.yLabel + " <-- value"
-                                }
-                            },
-                            backgroundColor: '#ffffffaa',
-                            titleFontSize: 16,
-                            titleFontColor: '#000',
-                            bodyFontColor: '#000',
-                            bodyFontSize: 14,
-                            displayColors: false
-                        },
-                        animation: {
-                            duration: 0 // general animation time
-                        },
-                        hover: {
-                            animationDuration: 0 // duration of animations when hovering an item
-                        },
-                        responsiveAnimationDuration: 0, // animation duration after a resize
-                        elements: {
-                            point: {
-                                radius: 2
-                            },
-                            line: {
-                                tension: 0.1 // disables bezier curves
-                            }
-                        }
-                    }
-                });
-                bHum = new Chart(ctx7, {
-                    type: 'line',
-                    data: {
-                        datasets: [{
-                            label: 'Humidity',
-                            data: bigHumDataShow,
-                            backgroundColor: '#ff4136',
-                            borderColor: '#ff4136',
-                            borderWidth: 2,
-                            fill: false,
-                        }]
-                    },
-                    options: {
-                        scales: {
-                            xAxes: [{
-                                type: 'time',
-                                ticks: {
-                                    maxRotation: 0,
-                                    minRotation: 0
-                                },
-                                time: {
-                                    parser: 'x'
-                                },
-                                labelString: 'Time'
-                            }]
-                        },
-                        tooltips: {
-                            intersect: false,
-                            mode: 'index',
-                            callbacks: {
-                                title: function(tooltipItem, data) {
-                                    return "Humidity"
-                                },
-                                label: function(tooltipItem, data) {
-                                    return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                                },
-                                afterLabel: function(tooltipItem, data) {
-                                    return tooltipItem.yLabel + " <-- value"
-                                }
-                            },
-                            backgroundColor: '#ffffffaa',
-                            titleFontSize: 16,
-                            titleFontColor: '#000',
-                            bodyFontColor: '#000',
-                            bodyFontSize: 14,
-                            displayColors: false
-                        },
-                        animation: {
-                            duration: 0 // general animation time
-                        },
-                        hover: {
-                            animationDuration: 0 // duration of animations when hovering an item
-                        },
-                        responsiveAnimationDuration: 0, // animation duration after a resize
-                        elements: {
-                            point: {
-                                radius: 2
-                            },
-                            line: {
-                                tension: 0.1 // disables bezier curves
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    </script>
+    <!-- <script src="bigmap.js"></script> -->
+    <script src="view.js"></script>
   </body>
 </html>

@@ -6,24 +6,27 @@ if (!Array.prototype.last){
 
 let mapLocations // TO FINISH
 let mapLocationsShow // [3] = time
-let allData // TO FINISH
+let allData = [] // TO FINISH
 
 /* [{d: *data*, t: *time*}, {d: *data*, t: *time*}] */
-let temperature = []
-let showTemperature = []
-let pressure = []
-let showPressure = []
-let humidity = []
-let showHumidity = []
+let bigTempData = []
+let bigTempDataShow = []
+let bigPresData = []
+let bigPresDataShow = []
+let bigHumData = []
+let bigHumDataShow = []
+let smallTempDataShow = []
+let smallPresDataShow = []
+let smallHumDataShow = []
 
 let actualTemp // TO FINISH
 let actualPres // TO FINISH
 let actualHum // TO FINISH
-let rssi = 0 // TODO
-let snr = 0 // TODO
-let packetsInLast10Seconds = 0 // TODO
-let lastPackets = [] // TE DWIE RZECZY MAJA SIE ROBIC W UPDATEVIEW, KTORY MA SIE ROBIC CO SEKUNDE
-let last = 0 // TODO
+
+let lastPackets = [] // TEN RZECZ MA SIE ROBIC W UPDATEVIEW, KTORY MA SIE ROBIC CO SEKUNDE, DO UPDATE LENGTH
+let lastTime
+
+let last // TODO
 let lost = 0 // TO FINISH (VIEW ONLY)
 let lat = 0 // TODO
 let long = 0 // TODO
@@ -31,8 +34,10 @@ let alt = 0 // TODO
 let maxAlt = 0 // TODO
 let descRate = 0 // TODO
 
-let minTime // ZROB ZEBY DOBRY TIMEZONE W TYCH INPUTACH BYL
+let minTime
 let maxTime
+let littleChartsTime = 10000 // applies to lastpackets as well
+alert("time set for little charts and last packets: " + littleChartsTime)
 
 let phase = 1 // 1 - przed recording, 2 - recording
 let p0
@@ -40,7 +45,7 @@ let trueh0
 
 
 /* load allData from storage */
-allData = localStorage.getItem('data') // [[{*data*}, timestamp], [{*data*}, timestamp]]
+/* allData = localStorage.getItem('data') // [[{*data*}, timestamp], [{*data*}, timestamp]]
 
 if(allData == null)
   allData = []
@@ -50,25 +55,25 @@ else
 for(let entity of allData) {
   let time = entity[1]
   if(entity[0].temp != null) {
-    temperature.push({d: entity[0].temp, t: time})
-    pressure.push({d: entity[0].pres, t: time})
-    humidity.push({d: entity[0].hum, t: time})
+    bigTempData.push({d: entity[0].temp, t: time})
+    bigPresData.push({d: entity[0].pres, t: time})
+    bigHumData.push({d: entity[0].hum, t: time})
   }
 }
 
-actualTemp = temperature.last() ? temperature.last() : 0
-actualPres = pressure.last() ? pressure.last() : 0
-actualHum = humidity.last() ? humidity.last() : 0
+actualTemp = bigTempData.last() ? bigTempData.last() : 0
+actualPres = bigPresData.last() ? bigPresData.last() : 0
+actualHum = bigHumData.last() ? bigHumData.last() : 0
 lost = allData.last()[0].sig.pl
 
-showTemperature = temperature
-showPressure = pressure
-showHumidity = humidity
+bigTempDataShow = bigTempData
+bigPresDataShow = bigPresData
+bigHumDataShow = bigHumData */
 
 
 
 /* load mapLocations from storage */
-let mapLocations = localStorage.getItem('map') // [[{*data*}, timestamp], [{*data*}, timestamp]]
+/* let mapLocations = localStorage.getItem('map') // [[{*data*}, timestamp], [{*data*}, timestamp]]
 
 if(mapLocations == null)
   mapLocations = [
@@ -81,67 +86,85 @@ if(mapLocations == null)
     []  // Carbon
   ]
 else
-  mapLocations = JSON.parse(mapLocations)
+  mapLocations = JSON.parse(mapLocations) */
 
 
 
 /* onData */
-function onData(data) {
-  let time = Date.now()
-  let myData = JSON.parse(data)
-  allData.push([data, time])
+function onData(myData, timeIn=0) {
+  let time
+  if(timeIn) {
+    time = timeIn
+  } else
+    time = Date.now()
+  allData.push([myData, time])
 
   lost = myData.sig.pl
   lastPackets.push(time)
+  lastTime = time
 
   // UPDATE MAP LOCATIONS TUTAJ JAKOS ZROB ALBO W INSERT DATA
 
+  /*
+  let data = [{"t":1594752544646,"y":"51.008"},{"t":1594752544801,"y":"94.067"}]
+  */
+  /*
+  {sig: {pc: packetCount, pl: packetsLost, junk: junk}, temp: 123, pres: 123, hum: 123}
+  {sig: {pc: packetCount, pl: packetsLost, junk: junk}, gps: {lat: 123, long: 123}}
+  */
 
-  for(const property in data) {
+  for(const property in myData) {
     switch(property) {
       case 'temp':
-        temperature.push(data[property])
+        bigTempData.push({t: time, y: myData[property].toFixed(1)})
+        smallTempDataShow.push({t: time, y: myData[property].toFixed(1)})
         break;
       case 'pres':
-        pressure.push(data[property])
+        bigPresData.push({t: time, y: myData[property].toFixed(3)})
+        smallPresDataShow.push({t: time, y: myData[property].toFixed(3)})
         break;
       case 'hum':
-        humidity.push(data[property])
+        bigHumData.push({t: time, y: myData[property].toFixed(0)})
+        smallHumDataShow.push({t: time, y: myData[property].toFixed(0)})
         break;
       case 'gps':
-        lat = data[property].lat
-        long = data[property].long
+        lat = myData[property].lat
+        long = myData[property].long
         /*if(phase != 1)
-          updateCansatPosAndSaveItAsWell(lat, long, pressure.last()) */
+          updateCansatPosAndSaveItAsWell(lat, long, bigPresData.last()) */
           /* JUST NOT YET */
         break;
     }
   }
 
-  if(minTime) {
+  if(minTime && myData.temp && myData.pres && myData.hum) {
     if(maxTime) {
       if(time > minTime && time < maxTime) {
-        insertData(data)
+        insertData(myData, time)
       }
     } else if(time > minTime) {
-      insertData(data)
+      insertData(myData, time)
     }
   } else if(maxTime) {
     if(time < maxTime) {
-      insertData(data)
+      insertData(myData, time)
     }
   } else {
-    insertData(data)
+    insertData(myData, time)
   }
+
+  last = 0
+  updateBig() // controller
+  updateSmall()
 }
-function insertData(data) {
-  showTemperature.push(data.temp)
-  showPressure.push(data.pres)
-  showHumidity.push(data.hum)
+function insertData(data, time) {
+  bigTempDataShow.push({t: time, y: parseFloat(data.temp).toFixed(1)})
+  bigPresDataShow.push({t: time, y: parseFloat(data.pres).toFixed(3)})
+  bigHumDataShow.push({t: time, y: parseFloat(data.hum).toFixed(0)})
 }
 /* function updateCansatPosAndSaveItAsWell(lat, long, press) {
   let R = Math.pow(p0 / press, 1 / 5.257)
-  let newDeltaHeight = ((R - 1) * (temperature.last() + 273.15) * 2000 / 13 - trueh0)
+  let newDeltaHeight = ((R - 1) * (bigTempData.last() + 273.15) * 2000 / 13 - trueh0)
   this.setState({deltaHeight: newDeltaHeight})
 
   for(let i = 1; i < mapLocations.length; i++)
@@ -162,9 +185,9 @@ function insertData(data) {
 
 /* timeValidate */
 function timeValidate() {
-  showTemperature = temperature.filter(fitsInTime)
-  showPressure = pressure.filter(fitsInTime)
-  showHumidity = humidity.filter(fitsInTime)
+  bigTempDataShow = bigTempData.filter(fitsInTime)
+  bigPresDataShow = bigPresData.filter(fitsInTime)
+  bigHumDataShow = bigHumData.filter(fitsInTime)
   mapLocationsShow = mapLocations.filter(mapFitsInTime)
 }
 function fitsInTime(value) {
@@ -194,3 +217,35 @@ function close() {
   localStorage.setItem('data', JSON.stringify(allData))
   localStorage.setItem('map', JSON.stringify(mapLocations))
 }
+
+/* $( window ).unload(function() {
+  console.log('I am the 1st one.');
+  localStorage.setItem('data', 'heh');
+}); */
+
+let clear = false
+
+$('#clearStorage').click(function() {
+  if(confirm("Do you really want to clear browser localStorage?")) {
+    alert("lol")
+    clear = true
+    localStorage.clear()
+  }
+})
+
+window.addEventListener('load', (event) => {
+  allData = JSON.parse(localStorage.getItem('data'))
+  if(allData == null)
+    allData = []
+  let oldData = allData
+  for(let entity of oldData) {
+    console.warn("hehe")
+    console.log(oldData)
+    onData(entity[0], entity[1])
+  }
+});
+
+window.addEventListener('unload', function(event) {
+  if(clear === false)
+    localStorage.setItem('data', JSON.stringify(allData));
+});
