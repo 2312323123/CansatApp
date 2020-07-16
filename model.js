@@ -237,7 +237,7 @@ window.addEventListener('load', (event) => {
   allData = JSON.parse(localStorage.getItem('data'))
   if(allData == null)
     allData = []
-  let oldData = allData
+  let oldData = [...allData]
   for(let entity of oldData) {
     console.warn("hehe")
     console.log(oldData)
