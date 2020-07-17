@@ -219,11 +219,11 @@ function resetCharts() {
             responsiveAnimationDuration: 0, // animation duration after a resize
             elements: {
                 point: {
-                    radius: 2
-                },
+                    radius: 1
+                }/* ,
                 line: {
                     tension: 0.1 // disables bezier curves
-                }
+                } */
             }
         }
     });
@@ -265,11 +265,11 @@ function resetCharts() {
             responsiveAnimationDuration: 0, // animation duration after a resize
             elements: {
                 point: {
-                    radius: 2
-                },
+                    radius: 1
+                }/* ,
                 line: {
                     tension: 0.1 // disables bezier curves
-                }
+                } */
             }
         }
     });
@@ -311,11 +311,11 @@ function resetCharts() {
             responsiveAnimationDuration: 0, // animation duration after a resize
             elements: {
                 point: {
-                    radius: 2
-                },
+                    radius: 1
+                }/* ,
                 line: {
                     tension: 0.1 // disables bezier curves
-                }
+                } */
             }
         }
     });
@@ -375,11 +375,11 @@ function resetCharts() {
             responsiveAnimationDuration: 0, // animation duration after a resize
             elements: {
                 point: {
-                    radius: 2
-                },
+                    radius: 1
+                }/* ,
                 line: {
                     tension: 0.1 // disables bezier curves
-                }
+                } */
             }
         }
     });
@@ -439,11 +439,11 @@ function resetCharts() {
             responsiveAnimationDuration: 0, // animation duration after a resize
             elements: {
                 point: {
-                    radius: 2
-                },
+                    radius: 1
+                }/* ,
                 line: {
                     tension: 0.1 // disables bezier curves
-                }
+                } */
             }
         }
     });
@@ -503,11 +503,11 @@ function resetCharts() {
             responsiveAnimationDuration: 0, // animation duration after a resize
             elements: {
                 point: {
-                    radius: 2
-                },
+                    radius: 1
+                }/* ,
                 line: {
                     tension: 0.1 // disables bezier curves
-                }
+                } */
             }
         }
     });
