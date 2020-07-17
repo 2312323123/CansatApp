@@ -124,6 +124,59 @@ function updateSmall() {
   sHum.update();
 }
 
-function updateView() {
-
+function updateAlt(sentAlt) {
+  let time = Date.now()
+  $('#alt').html(`alt: ${parseFloat(sentAlt).toFixed(1)}m`)
+  if(sentAlt > maxAlt) {
+    maxAlt = sentAlt
+    $('#maxAlt').html(`max alt: ${parseFloat(alt).toFixed(1)}m`)
+  }
+  if(lastAltTime) {
+    $('#desc').html(`desc: ${parseFloat((alt - sentAlt) / ((time - lastAltTime) / 1000)).toFixed(1)}m/s`)
+  }
+  lastAltTime = time
+  alt = sentAlt
 }
+
+$('#startRecording').click(function() {
+  if(calculatep0()) {
+    phase = 2
+    $('#startRecordingContainer').css('background-color', '#28a745')
+    $('#startRecording').text('RECORDING HAS STARTED')
+  }
+  if(lat && long) {
+    addToMapLocations()
+  }
+})
+function calculatep0() {
+  if(p0 == undefined)
+    if(bigTempData.last() && bigPresData.last()) {
+      console.log('calculating p0!')
+      trueh0 = h0
+      h0 = 0
+      p0 = bigPresData.last() * Math.pow(1 - (trueh0 * 0.0065 / (bigTempData.last() + 273.15 + trueh0 * 0.0065)), -5.257)
+      return true
+    }
+  return false
+}
+
+$(document).keypress(function(event){
+  var keycode = (event.keyCode ? event.keyCode : event.which);
+  console.log(keycode)
+  if(keycode == '45'){ // -
+    h0 -= 5
+    redrawBig = true
+  }
+  if(keycode == '61'){ // =
+    h0 += 5
+    redrawBig = true
+  }
+  if(keycode == '91'){ // [
+    h0 -= 1
+    redrawBig = true
+  }
+  if(keycode == '93'){ // ]
+    h0 += 1
+    redrawBig = true
+  }
+});

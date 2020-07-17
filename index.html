@@ -47,6 +47,10 @@
             filter: progid:DXImageTransform.Microsoft.Matrix(Dx=0,Dy=0); /*IE6, IE7*/
             transform: translateY(-50%);    
         }
+
+        #map2d > canvas {
+            float: right;
+        }
     </style>
   </head>
   <body style="position: fixed;">
@@ -71,13 +75,13 @@
                         <div id="desc" class="col green">desc:</div>
                     </div>
                     <div id="settingsContainer" class="collapse show dropdown row" id="WSCollapse"> <!-- SETTINGS -->
-                        <select class="custom-select" style="margin-bottom:1vh;">
+                        <select id="mapSelect" class="custom-select" style="margin-bottom:1vh;">
                             <option selected value="1">Mapa: Leszno</option>
-                            <option value="2">Mapa: Carbon</option>
-                            <option value="3">Mapa: Tatry</option>
+                            <option value="6">Mapa: Carbon</option>
+                            <option value="2">Mapa: Tatry</option>
                             <option value="4">Mapa: Niepołomice</option>
                             <option value="5">Mapa: Rząska</option>
-                            <option value="6">Mapa: Balice daleko</option>
+                            <option value="3">Mapa: Balice daleko</option>
                         </select>
                         <div class="row form-inline" style="margin-bottom: 10px;">
                             <label class="col col-form-label">WebSockets:</label>
@@ -101,10 +105,15 @@
                             </div>
                             <button id="clearStorage" class="btn btn-outline-info">Clear localStorage</button>
                         </div>
+                        <div class="row w-100" style="margin-top: 10px;">
+                            <div id="startRecordingContainer" class="col-12" style="background-color: #ffc107;">
+                                <button id="startRecording" class="btn btn-success">START RECORDING</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="row vh88 row navy"> <!-- BIGG -->
                         <div id="bigMapp" class="w-100 h-100">
-                            <div id="map2d" class="w-100 h-100" style="width:200vw;height:200vh;"></div>
+                            <div id="map2d" class="w-100 h-100" style="float: right;"></div>
                             <div id="bigMap" class="w-100 h-100"></div>
                         </div>
                         <canvas id="bTemp" class="w-100 h-100"></canvas>
@@ -198,7 +207,7 @@
     <script src="falsedatagenerator.js"></script>
     <script src="model.js"></script>
     <script src="controller.js"></script>
-    <!-- <script src="bigmap.js"></script> -->
+    <script src="bigmap.js"></script>
     <script src="view.js"></script>
   </body>
 </html>

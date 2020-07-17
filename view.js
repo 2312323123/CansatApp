@@ -204,25 +204,7 @@ function resetCharts() {
                 }]
             },
             tooltips: {
-                intersect: false,
-                mode: 'index',
-                callbacks: {
-                    title: function(tooltipItem, data) {
-                        return "Temperature"
-                    },
-                    label: function(tooltipItem, data) {
-                        return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                    },
-                    afterLabel: function(tooltipItem, data) {
-                        return tooltipItem.yLabel + " <-- value"
-                    }
-                },
-                backgroundColor: '#ffffffaa',
-                titleFontSize: 16,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                bodyFontSize: 14,
-                displayColors: false
+                enabled: false
             },
             animation: {
                 duration: 0 // general animation time
@@ -268,25 +250,7 @@ function resetCharts() {
                 }]
             },
             tooltips: {
-                intersect: false,
-                mode: 'index',
-                callbacks: {
-                    title: function(tooltipItem, data) {
-                        return "Pressure"
-                    },
-                    label: function(tooltipItem, data) {
-                        return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                    },
-                    afterLabel: function(tooltipItem, data) {
-                        return tooltipItem.yLabel + " <-- value"
-                    }
-                },
-                backgroundColor: '#ffffffaa',
-                titleFontSize: 16,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                bodyFontSize: 14,
-                displayColors: false
+                enabled: false
             },
             animation: {
                 duration: 0 // general animation time
@@ -332,25 +296,7 @@ function resetCharts() {
                 }]
             },
             tooltips: {
-                intersect: false,
-                mode: 'index',
-                callbacks: {
-                    title: function(tooltipItem, data) {
-                        return "Humidity"
-                    },
-                    label: function(tooltipItem, data) {
-                        return moment(tooltipItem.xLabel).format('H:mm:ss') + " <-- time    " +  moment(tooltipItem.xLabel).format('YYYY/MMM/D')
-                    },
-                    afterLabel: function(tooltipItem, data) {
-                        return tooltipItem.yLabel + " <-- value"
-                    }
-                },
-                backgroundColor: '#ffffffaa',
-                titleFontSize: 16,
-                titleFontColor: '#000',
-                bodyFontColor: '#000',
-                bodyFontSize: 14,
-                displayColors: false
+                enabled: false
             },
             animation: {
                 duration: 0 // general animation time
@@ -563,4 +509,5 @@ function resetCharts() {
     });
 
     bigPlot(actualPanel)
+    reloadMapLocationsShow()
 }
