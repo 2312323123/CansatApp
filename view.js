@@ -98,7 +98,11 @@ $('.switch').on('change.bootstrapSwitch', function () {
     bHum.update();
 }) */
 
-$("#chart0").click(function(){bigPlot(1)})
+$("#chart0").click(function(){
+    bigPlot(1)
+    redrawBig = true
+    redrawSmall = true
+})
 $("#chart1").click(function(){bigPlot(5)})
 $("#chart2").click(function(){bigPlot(6)})
 $("#chart3").click(function(){bigPlot(7)})

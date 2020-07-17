@@ -150,11 +150,12 @@ $('#startRecording').click(function() {
 })
 function calculatep0() {
   if(p0 == undefined)
-    if(bigTempData.last() && bigPresData.last()) {
+    if(bigTempData.last().y != null && bigPresData.last().y != null) {
       console.log('calculating p0!')
       trueh0 = h0
       h0 = 0
-      p0 = bigPresData.last() * Math.pow(1 - (trueh0 * 0.0065 / (bigTempData.last() + 273.15 + trueh0 * 0.0065)), -5.257)
+      p0 = parseFloat(bigPresData.last().y) * Math.pow(1 - (trueh0 * 0.0065 / (parseFloat(bigTempData.last().y) + 273.15 + trueh0 * 0.0065)), -5.257)
+      // console.log(`p0: ${p0}, trueh0: ${trueh0}, lastP: ${typeof bigPresData.last().y}, lastTTYPEOOOOOOOOF: ${typeof bigTempData.last().y}`)
       return true
     }
   return false

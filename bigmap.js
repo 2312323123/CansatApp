@@ -2157,14 +2157,11 @@ var t = function( p ) { // p could be any variable name
       w = $("#bigMap").width()
       h = $("#bigMap").height()
     }
-    // console.log(`w: ${w}, h: ${h}`)
     if(w/h > imageSettings[actualIndex].imgw/imageSettings[actualIndex].imgh) {
         myCanvas = p.resizeCanvas(imageSettings[actualIndex].imgw/imageSettings[actualIndex].imgh * h, h);
-        // console.log(`imgw: ${imageSettings[actualIndex].imgw/imageSettings[actualIndex].imgh * h}, h: ${h}`)
     }
     else {
         myCanvas = p.resizeCanvas(w, imageSettings[actualIndex].imgh/imageSettings[actualIndex].imgw * w);
-        // console.log(`imgw: ${w}, h: ${imageSettings[actualIndex].imgh/imageSettings[actualIndex].imgw * w}`)
     }
     redrawSmall = true
   }
@@ -2189,10 +2186,11 @@ var s = function( p ) { // p could be any variable name
         let myCanvas = p.createCanvas($("#bigMap").width(), $("#bigMap").height(), p.WEBGL);
             myCanvas.parent("bigMap");
         p.noStroke();
-        p.redraw()
+        // p.redraw()
     };
 
     p.draw = function() {
+        h0 = parseFloat(h0)
         posZ = (alt + trueh0 + h0) * imageSettings[actualIndex].ppm
         let down = false
         if(redrawBig) {
@@ -2264,7 +2262,7 @@ var s = function( p ) { // p could be any variable name
 
           p.background(60, 108, 140)
       
-          p.box(0);
+          // p.cylinder(0,0);
 
           p.camera(camX, camY, camZ, camX + p.sin(a) * p.cos(b), camY + p.cos(a) * p.cos(b), camZ + p.sin(b), 0, 0, -1)
           p.perspective(p.PI/3.0, p.width/p.height, 1, ((p.height/2.0) / p.tan(p.PI/6.0)) * 10.0)
@@ -2279,21 +2277,33 @@ var s = function( p ) { // p could be any variable name
           p.pop()
 
           p.push()
-              p.noFill()
+              p.fill(0,0,0,0)
               p.stroke(230, 100, 255)
               p.strokeWeight(2)
               p.beginShape()
               for(let i = 0; i < mapLocationsShow.length; i++) {
               p.vertex(mapLocationsShow[i][0], mapLocationsShow[i][1], mapLocationsShow[i][2] + h0 * imageSettings[actualIndex].ppm)
+              // console.log(mapLocationsShow[i][2])
               if(i % 100 === 99) {
                   p.endShape()
                   p.beginShape()
               }
               }
               p.vertex(posX, posY, posZ + h0 * imageSettings[actualIndex].ppm)
+              // console.log(posZ)
               p.endShape()
           p.pop()
         }
+
+        /* p.push()
+          p.noFill()
+          p.beginShape()
+          for(let i = 0; i < 300; i++) {
+          // p.stroke(0, 0, i % 256)
+          p.vertex(p.cos(0 / 20) * 100, 0, 0)
+          }
+          p.endShape()
+      p.pop() */
     };
     
     function canSat() {
@@ -2349,7 +2359,6 @@ function littleMap (p) {
         height = imageSettings[actualIndex].imgh / imageSettings[actualIndex].imgw * width
       }
       if(props.mapNumber) {
-        // console.log('received mapnumber: ' + props.mapNumber)
         imageChange(props.mapNumber)
       }
       if(props.long) {
@@ -2368,26 +2377,20 @@ function littleMap (p) {
 
 function bigMap (p) {
   p.myCustomRedrawAccordingToNewPropsHandler = function (props) {
-    // console.log('dzień dobry')
     if(props.width) {
       width = props.width
-      // console.log('width')
     }
     if(props.height) {
       height = props.height
-      // console.log('height')
     }
     if(props.long) {
       posX = p.map(props.long, imageSettings[actualIndex].longMin, imageSettings[actualIndex].longMax, 0, imageSettings[actualIndex].imgw)
-      // console.log('long')
     }
     if(props.lat) {
       posY = p.map(props.lat, imageSettings[actualIndex].latMin, imageSettings[actualIndex].latMax, imageSettings[actualIndex].imgh, 0)
-      // console.log('lat')
     }
     if(props.altitude) {
       posZ = props.altitude * imageSettings[actualIndex].ppm
-      // console.log('altitude')
     }
   }
 }
