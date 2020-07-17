@@ -2138,8 +2138,8 @@ var t = function( p ) { // p could be any variable name
         redrawSmall = false
         p.image(images[actualIndex], 0, 0, p.width, p.height)
         p.circle(
-          p.map(long, imageSettings[actualIndex].longMin, imageSettings[actualIndex.longMax], 0, w),
-          p.map(lat, imageSettings[actualIndex].latMin, imageSettings[actualIndex].latMax, h, 0),
+          p.map(long, imageSettings[actualIndex].longMin, imageSettings[actualIndex].longMax, 0, p.width),
+          p.map(lat, imageSettings[actualIndex].latMin, imageSettings[actualIndex].latMax, p.height, 0),
           8)
       }
       if(resizeSmallMap) {
@@ -2157,14 +2157,14 @@ var t = function( p ) { // p could be any variable name
       w = $("#bigMap").width()
       h = $("#bigMap").height()
     }
-    console.log(`w: ${w}, h: ${h}`)
+    // console.log(`w: ${w}, h: ${h}`)
     if(w/h > imageSettings[actualIndex].imgw/imageSettings[actualIndex].imgh) {
         myCanvas = p.resizeCanvas(imageSettings[actualIndex].imgw/imageSettings[actualIndex].imgh * h, h);
-        console.log(`imgw: ${imageSettings[actualIndex].imgw/imageSettings[actualIndex].imgh * h}, h: ${h}`)
+        // console.log(`imgw: ${imageSettings[actualIndex].imgw/imageSettings[actualIndex].imgh * h}, h: ${h}`)
     }
     else {
         myCanvas = p.resizeCanvas(w, imageSettings[actualIndex].imgh/imageSettings[actualIndex].imgw * w);
-        console.log(`imgw: ${w}, h: ${imageSettings[actualIndex].imgh/imageSettings[actualIndex].imgw * w}`)
+        // console.log(`imgw: ${w}, h: ${imageSettings[actualIndex].imgh/imageSettings[actualIndex].imgw * w}`)
     }
     redrawSmall = true
   }
@@ -2193,6 +2193,7 @@ var s = function( p ) { // p could be any variable name
     };
 
     p.draw = function() {
+        posZ = (alt + trueh0 + h0) * imageSettings[actualIndex].ppm
         let down = false
         if(redrawBig) {
           down = true
@@ -2298,33 +2299,32 @@ var s = function( p ) { // p could be any variable name
     function canSat() {
           p.fill('#00FFFF')
           p.stroke('#FFFFFF')
-          let tort = h0 * imageSettings[actualIndex].ppm
           p.beginShape(p.TRIANGLES)
-              p.vertex(posX, posY, posZ+7.5+ tort)
-              p.vertex(posX + 5, posY, posZ+ tort)
-              p.vertex(posX, posY+5, posZ+ tort)
-              p.vertex(posX, posY, posZ+7.5+ tort)
-              p.vertex(posX + 5, posY, posZ+ tort)
-              p.vertex(posX, posY-5, posZ+ tort)
-              p.vertex(posX, posY, posZ+7.5+ tort)
-              p.vertex(posX-5, posY, posZ+ tort)
-              p.vertex(posX, posY+5, posZ+ tort)
-              p.vertex(posX, posY, posZ+7.5+ tort)
-              p.vertex(posX-5, posY, posZ+ tort)
-              p.vertex(posX, posY-5, posZ+ tort)
+              p.vertex(posX, posY, posZ+7.5)
+              p.vertex(posX + 5, posY, posZ)
+              p.vertex(posX, posY+5, posZ)
+              p.vertex(posX, posY, posZ+7.5)
+              p.vertex(posX + 5, posY, posZ)
+              p.vertex(posX, posY-5, posZ)
+              p.vertex(posX, posY, posZ+7.5)
+              p.vertex(posX-5, posY, posZ)
+              p.vertex(posX, posY+5, posZ)
+              p.vertex(posX, posY, posZ+7.5)
+              p.vertex(posX-5, posY, posZ)
+              p.vertex(posX, posY-5, posZ)
           
-              p.vertex(posX, posY, posZ-7.5+ tort)
-              p.vertex(posX+5, posY, posZ+ tort)
-              p.vertex(posX, posY+5, posZ+ tort)
-              p.vertex(posX, posY, posZ-7.5+ tort)
-              p.vertex(posX+5, posY, posZ+ tort)
-              p.vertex(posX, posY-5, posZ+ tort)
-              p.vertex(posX, posY, posZ-7.5+ tort)
-              p.vertex(posX-5, posY, posZ+ tort)
-              p.vertex(posX, posY+5, posZ+ tort)
-              p.vertex(posX, posY, posZ-7.5+ tort)
-              p.vertex(posX-5, posY, posZ+ tort)
-              p.vertex(posX, posY-5, posZ+ tort)
+              p.vertex(posX, posY, posZ-7.5)
+              p.vertex(posX+5, posY, posZ)
+              p.vertex(posX, posY+5, posZ)
+              p.vertex(posX, posY, posZ-7.5)
+              p.vertex(posX+5, posY, posZ)
+              p.vertex(posX, posY-5, posZ)
+              p.vertex(posX, posY, posZ-7.5)
+              p.vertex(posX-5, posY, posZ)
+              p.vertex(posX, posY+5, posZ)
+              p.vertex(posX, posY, posZ-7.5)
+              p.vertex(posX-5, posY, posZ)
+              p.vertex(posX, posY-5, posZ)
           p.endShape()
     }
 

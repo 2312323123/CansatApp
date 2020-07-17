@@ -82,7 +82,7 @@ $('#bigMap').hide()
 $('.switch').on('change.bootstrapSwitch', function () {
     $('#map2d').toggle()
     $('#bigMap').toggle()
-    console.log("switched")
+    // console.log("switched")
 });
 
 

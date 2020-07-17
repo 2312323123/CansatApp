@@ -162,7 +162,7 @@ function calculatep0() {
 
 $(document).keypress(function(event){
   var keycode = (event.keyCode ? event.keyCode : event.which);
-  console.log(keycode)
+  // console.log(keycode)
   if(keycode == '45'){ // -
     h0 -= 5
     redrawBig = true

@@ -47,34 +47,6 @@ let trueh0 = 0
 let lastAltTime
 
 
-/* load allData from storage */
-allData = localStorage.getItem('data') // [[{*data*}, timestamp], [{*data*}, timestamp]]
-
-if(allData == null)
-  allData = []
-else
-  allData = JSON.parse(allData)
-
-for(let entity of allData) {
-  let time = entity[1]
-  if(entity[0].temp != null) {
-    bigTempData.push({d: entity[0].temp, t: time})
-    bigPresData.push({d: entity[0].pres, t: time})
-    bigHumData.push({d: entity[0].hum, t: time})
-  }
-}
-
-actualTemp = bigTempData.last() ? bigTempData.last() : 0
-actualPres = bigPresData.last() ? bigPresData.last() : 0
-actualHum = bigHumData.last() ? bigHumData.last() : 0
-lost = allData.last()[0].sig.pl
-
-bigTempDataShow = bigTempData
-bigPresDataShow = bigPresData
-bigHumDataShow = bigHumData
-
-
-
 /* onData */
 function onData(myData, timeIn=0) {
   let time
@@ -117,7 +89,6 @@ function onData(myData, timeIn=0) {
         long = myData[property].long
         posX = map(long, imageSettings[actualIndex].longMin, imageSettings[actualIndex].longMax, 0, imageSettings[actualIndex].imgw)
         posY = map(lat, imageSettings[actualIndex].latMin, imageSettings[actualIndex].latMax, imageSettings[actualIndex].imgh, 0)
-        posZ = (alt + trueh0 + h0) * imageSettings[actualIndex].ppm
         redrawSmall = true
         if(phase != 1)
           addToMapLocations()
@@ -197,7 +168,7 @@ let clear = false
 
 $('#clearStorage').click(function() {
   if(confirm("Do you really want to clear browser localStorage?")) {
-    alert("lol")
+    // alert("lol")
     clear = true
     localStorage.clear()
   }
@@ -220,12 +191,12 @@ window.addEventListener('load', (event) => {
   alert(`time set for little charts and last packets: ${littleChartsTime / 1000}s`)
 });
 
-/* window.addEventListener('unload', function(event) {
+window.addEventListener('unload', function(event) {
   if(clear === false) {
     localStorage.setItem('data', JSON.stringify(allData));
     localStorage.setItem('map', JSON.stringify(mapLocations));
   }
-}); */
+});
 
 function reloadMapLocationsShow() {
   mapLocationsShow = mapLocations.map(locationToShow)
@@ -266,105 +237,3 @@ function addToMapLocations() {
     ])
   }
 }
-
-/* JUST NOT YET */
-/*
-function startRecording() {
-  if(this.calculatep0()) {
-    this.phase = 2
-    this.setState({recordingLocations: true})
-  }
-}
-function calculatep0() { // only use in startRecording
-  if(this.p0 === undefined)
-    if(this.state._temperature && this.state._pressure) {
-      console.log('calculating p0!')
-      settrueh0(this.trueh0 = this.h0)
-      seth0(this.h0 = 0)
-      this.p0 = this.state._pressure * Math.pow(1 - (this.trueh0 * 0.0065 / (this.state._temperature + 273.15 + this.trueh0 * 0.0065)), -5.257)
-      this.setState({p0: this.p0})
-      return true
-    }
-  return false
-}
-
-function updateCansatPosAndSaveItAsWell(long, lat, press) {
-  let R = Math.pow(this.state.p0 / this.state._pressure, 1 / 5.257)
-  let newDeltaHeight = ((R - 1) * (this.state._temperature + 273.15) * 2000 / 13 - this.trueh0)
-  this.setState({deltaHeight: newDeltaHeight})
-
-  for(let i = 1; i < mapLocations.length; i++)
-    mapLocations[i].push([
-      map(this.state._long, imageSettings[i].longMin, imageSettings[i].longMax, 0, imageSettings[i].imgw),
-      map(this.state._lat, imageSettings[i].latMin, imageSettings[i].latMax, imageSettings[i].imgh, 0),
-      imageSettings[i].ppm * (this.state.deltaHeight + this.trueh0)
-    ])
-
-  let t = new Date().getTime()
-  if(this.lastTime && this.lastDeltaHeight)
-    this.setState({_fallingSpeed: ((newDeltaHeight - this.lastDeltaHeight) * 1000 / (t - this.lastTime)).toFixed(6)})
-  this.lastTime = t
-  this.lastDeltaHeight = newDeltaHeight
-}
-
-function myEventHandler(e) {
-  // console.log(e.keyCode);
-  if(!e.repeat) {
-    let keyCode = e.keyCode;
-    if (keyCode == 49)
-      this.selectPanel(0)
-    if (keyCode == 50)
-      this.selectPanel(1)
-    if (keyCode == 51)
-      this.selectPanel(2)
-  }
-  switch(e.key) {
-    case '-':
-      seth0(this.h0 -= 5)
-      break;
-    case '=':
-      seth0(this.h0 += 5)
-      break;
-    case '[':
-      seth0(this.h0 -= 1)
-      break;
-    case ']':
-      seth0(this.h0 += 1)
-      break;
-    case '\\':
-      alert(`starting height: ${this.trueh0 === 0? this.h0 : this.trueh0}`)
-      break;
-    case 'o':
-      alert(`h0: ${this.h0}`)
-      break;
-    case 'p':
-      alert(`deltaHeight: ${this.state.deltaHeight}`)
-      break;
-  }
-}
-
-case 'gps':
-  this.update._lat = myObj[property]['lat']
-  this.update._long = myObj[property]['long']
-  if(this.phase !== 1)
-    this.updateCansatPosAndSaveItAsWell(this.update._long, this.update._lat, this.state._pressure)
-  break;
-
-  
-  <P5Wrapper
-  sketch={bigMap}
-  mapNumber={this.mapNumber}
-  width={window.innerWidth * 0.65}
-  height={window.innerHeight}
-  long={this.state._long}
-  lat={this.state._lat}
-  altitude={this.state.deltaHeight + this.trueh0}/>
-</div>
-
-
-
-mapLocations[i].push([
-  map(this.state._long, imageSettings[i].longMin, imageSettings[i].longMax, 0, imageSettings[i].imgw),
-  map(this.state._lat, imageSettings[i].latMin, imageSettings[i].latMax, imageSettings[i].imgh, 0),
-  imageSettings[i].ppm * (this.state.deltaHeight + this.trueh0)
-]) */
