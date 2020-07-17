@@ -2277,7 +2277,8 @@ var s = function( p ) { // p could be any variable name
           p.pop()
 
           p.push()
-              p.fill(0,0,0,0)
+              p.fill(0,0)
+              // p.noFill()
               p.stroke(230, 100, 255)
               p.strokeWeight(2)
               p.beginShape()
@@ -2289,7 +2290,7 @@ var s = function( p ) { // p could be any variable name
                   p.beginShape()
               }
               }
-              p.vertex(posX, posY, posZ + h0 * imageSettings[actualIndex].ppm)
+              p.vertex(posX, posY, posZ)// + h0 * imageSettings[actualIndex].ppm)
               // console.log(posZ)
               p.endShape()
           p.pop()

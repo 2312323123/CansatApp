@@ -14,7 +14,7 @@ $('#ping').click(function() {
 })
 
 $('#connection').css("background-color", '#dc3545')
-connect()
+// connect()
 
 function connect() {
   if(socket != null) {

@@ -57,8 +57,8 @@ function onData(myData, timeIn=0) {
     time = Date.now()
   allData.push([myData, time])
 
-  // if(myData.sig.pl != null)
-  //   lost = myData.sig.pl
+  if(myData.sig.pl != null)
+    lost = myData.sig.pl
   lastPackets.push(time)
   lastTime = time
 
@@ -175,31 +175,95 @@ $('#clearStorage').click(function() {
   }
 })
 
-/* window.addEventListener('load', (event) => {
+window.addEventListener('load', (event) => {
   allData = JSON.parse(localStorage.getItem('data'))
   if(allData == null)
     allData = []
   let oldData = [...allData]
   oldData.sort((e1,e2) => e1[1] - e2[1])
   for(let entity of oldData) {
-    onData(entity[0], entity[1])
+    loadData(entity[0], entity[1])
   }
+  updateBig() // controller
+  updateSmall()
   
   mapLocations =  JSON.parse(localStorage.getItem('map'))
   if(mapLocations == null)
     mapLocations = []
+  reloadMapLocationsShow()
 
   alert(`time set for little charts and last packets: ${littleChartsTime / 1000}s`)
-}); */
+});
 
-/* window.addEventListener('unload', function(event) {
+window.addEventListener('unload', function(event) {
   if(clear === false) {
     localStorage.setItem('data', JSON.stringify(allData));
     localStorage.setItem('map', JSON.stringify(mapLocations));
   }
-}); */
+});
+
+function loadData(myData, time) {
+  allData.push([myData, time])
+
+  if(myData.sig.pl != null)
+    lost = myData.sig.pl
+
+  lastPackets.push(time)
+  lastTime = time
+
+  for(const property in myData) {
+    switch(property) {
+      case 'temp':
+        type = 1
+        bigTempData.push({t: time, y: parseFloat(myData[property]).toFixed(1)})
+        smallTempDataShow.push({t: time, y: parseFloat(myData[property]).toFixed(1)})
+        break;
+      case 'pres':
+        type = 1
+        bigPresData.push({t: time, y: parseFloat(myData[property]).toFixed(3)})
+        smallPresDataShow.push({t: time, y: parseFloat(myData[property]).toFixed(3)})
+        break;
+      case 'hum':
+        type = 1
+        bigHumData.push({t: time, y: parseFloat(myData[property]).toFixed(0)})
+        smallHumDataShow.push({t: time, y: parseFloat(myData[property]).toFixed(0)})
+        break;
+      case 'gps':
+        type = 2
+        lat = parseFloat(myData[property].lat).toFixed(4)
+        long = parseFloat(myData[property].long).toFixed(4)
+        posX = map(long, imageSettings[actualIndex].longMin, imageSettings[actualIndex].longMax, 0, imageSettings[actualIndex].imgw)
+        posY = map(lat, imageSettings[actualIndex].latMin, imageSettings[actualIndex].latMax, imageSettings[actualIndex].imgh, 0)
+        redrawSmall = true
+        if(phase != 1)
+          addToMapLocations()
+          redrawBig = true
+        break;
+    }
+  }
+
+  if(minTime && myData.temp && myData.pres && myData.hum) {
+    if(maxTime) {
+      if(time > minTime && time < maxTime) {
+        insertData(myData, time)
+      }
+    } else if(time > minTime) {
+      insertData(myData, time)
+    }
+  } else if(maxTime) {
+    if(time < maxTime) {
+      insertData(myData, time)
+    }
+  } else {
+    insertData(myData, time)
+  }
+
+  last = 0
+
+}
 
 function reloadMapLocationsShow() {
+  console.log("reload")
   mapLocationsShow = mapLocations.map(locationToShow)
   mapLocationsShow = mapLocationsShow.filter(function (el) {
     return el != null;
@@ -207,6 +271,11 @@ function reloadMapLocationsShow() {
   redrawBig = true
 }
 function locationToShow(obj) {
+  obj.long = parseFloat(obj.long)
+  obj.lat = parseFloat(obj.lat)
+  obj.alt = parseFloat(obj.alt)
+  obj.t = parseFloat(obj.t)
+  
   if(obj.long > imageSettings[actualIndex].longMin && obj.long < imageSettings[actualIndex].longMax && obj.lat > imageSettings[actualIndex].latMin && obj.lat < imageSettings[actualIndex].latMax && fitsInTime(obj.t)) {
     return [
       map(obj.long, imageSettings[actualIndex].longMin, imageSettings[actualIndex].longMax, 0, imageSettings[actualIndex].imgw),
@@ -221,13 +290,13 @@ function addToMapLocations() {
   let time = Date.now()
   let R = Math.pow(p0 / parseFloat(bigPresData.last().y), 1 / 5.257)
   let newDeltaHeight = ((R - 1) * (parseFloat(bigTempData.last().y) + 273.15) * 2000 / 13 - trueh0)
-  console.warn('newDeltaHeight: ' + newDeltaHeight)
+  // console.warn('newDeltaHeight: ' + newDeltaHeight)
   updateAlt(newDeltaHeight)
 
   mapLocations.push({
     lat: lat,
     long: long,
-    alt: alt,
+    alt: parseFloat(alt).toFixed(2),
     t: time
   })
 
