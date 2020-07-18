@@ -134,11 +134,11 @@ function insertData(data, time) {
 
 function fitsInTime(value) {
   if(minTime && maxTime)
-    return (value.t >= minTime && value.t <= maxTime)
+    return (value >= minTime && value <= maxTime)
   else if(minTime)
-    return value.t >= minTime
+    return value >= minTime
   else if(maxTime)
-    return value.t <= maxTime
+    return value <= maxTime
   else
     return true
 }
@@ -176,29 +176,37 @@ $('#clearStorage').click(function() {
 })
 
 window.addEventListener('load', (event) => {
-  allData = JSON.parse(localStorage.getItem('data'))
-  if(allData == null)
-    allData = []
-  let oldData = [...allData]
-  oldData.sort((e1,e2) => e1[1] - e2[1])
-  for(let entity of oldData) {
-    loadData(entity[0], entity[1])
-  }
-  updateBig() // controller
-  updateSmall()
+  // alert('hey')
+  // allData = JSON.parse(localStorage.getItem('data'))
+  // if(allData == null)
+  //   allData = []
+  // let oldData = [...allData]
+  // oldData.sort((e1,e2) => e1[1] - e2[1])
+  // for(let entity of oldData) {
+  //   loadData(entity[0], entity[1])
+  // }
+  // alert('hey')
+  bigTempData = JSON.parse(localStorage.getItem('temp')) || []
+  bigPresData = JSON.parse(localStorage.getItem('pres')) || []
+  bigHumData = JSON.parse(localStorage.getItem('hum')) || []
   
   mapLocations =  JSON.parse(localStorage.getItem('map'))
   if(mapLocations == null)
     mapLocations = []
-  reloadMapLocationsShow()
+  resetCharts()
+  updateBig() // controller
+  updateSmall()
 
   alert(`time set for little charts and last packets: ${littleChartsTime / 1000}s`)
 });
 
 window.addEventListener('unload', function(event) {
   if(clear === false) {
-    localStorage.setItem('data', JSON.stringify(allData));
+    // localStorage.setItem('data', JSON.stringify(allData));
     localStorage.setItem('map', JSON.stringify(mapLocations));
+    localStorage.setItem('temp', JSON.stringify(bigTempData));
+    localStorage.setItem('pres', JSON.stringify(bigPresData));
+    localStorage.setItem('hum', JSON.stringify(bigHumData));
   }
 });
 
@@ -263,7 +271,7 @@ function loadData(myData, time) {
 }
 
 function reloadMapLocationsShow() {
-  console.log("reload")
+  // console.log("reload")
   mapLocationsShow = mapLocations.map(locationToShow)
   mapLocationsShow = mapLocationsShow.filter(function (el) {
     return el != null;

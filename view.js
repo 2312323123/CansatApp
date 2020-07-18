@@ -145,7 +145,6 @@ Chart.defaults.global.defaultFontColor = '#f8f9fa';
 let data = [{"t":1594752544646,"y":"51.008"},{"t":1594752544801,"y":"94.067"}]
 */
 
-resetCharts()
 
 function resetCharts() {
     bigTempDataShow = []
@@ -166,6 +165,10 @@ function resetCharts() {
         bigTempDataShow = bigTempData.filter(data => data.t < maxTime)
         bigPresDataShow = bigPresData.filter(data => data.t < maxTime)
         bigHumDataShow = bigHumData.filter(data => data.t < maxTime)
+    } else {
+        bigTempDataShow = bigTempData
+        bigPresDataShow = bigPresData
+        bigHumDataShow = bigHumData
     }
 
     if(sTemp != undefined)
