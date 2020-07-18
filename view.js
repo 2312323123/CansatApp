@@ -223,10 +223,10 @@ function resetCharts() {
             elements: {
                 point: {
                     radius: 1
-                }/* ,
+                },
                 line: {
-                    tension: 0.1 // disables bezier curves
-                } */
+                    tension: 0 // disables bezier curves
+                }
             }
         }
     });
@@ -269,10 +269,10 @@ function resetCharts() {
             elements: {
                 point: {
                     radius: 1
-                }/* ,
+                },
                 line: {
-                    tension: 0.1 // disables bezier curves
-                } */
+                    tension: 0 // disables bezier curves
+                }
             }
         }
     });
@@ -315,10 +315,10 @@ function resetCharts() {
             elements: {
                 point: {
                     radius: 1
-                }/* ,
+                },
                 line: {
-                    tension: 0.1 // disables bezier curves
-                } */
+                    tension: 0 // disables bezier curves
+                }
             }
         }
     });
@@ -379,10 +379,10 @@ function resetCharts() {
             elements: {
                 point: {
                     radius: 1
-                }/* ,
+                },
                 line: {
-                    tension: 0.1 // disables bezier curves
-                } */
+                    tension: 0 // disables bezier curves
+                }
             }
         }
     });
@@ -443,10 +443,10 @@ function resetCharts() {
             elements: {
                 point: {
                     radius: 1
-                }/* ,
+                },
                 line: {
-                    tension: 0.1 // disables bezier curves
-                } */
+                    tension: 0 // disables bezier curves
+                }
             }
         }
     });
@@ -507,10 +507,10 @@ function resetCharts() {
             elements: {
                 point: {
                     radius: 1
-                }/* ,
+                },
                 line: {
-                    tension: 0.1 // disables bezier curves
-                } */
+                    tension: 0 // disables bezier curves
+                }
             }
         }
     });
